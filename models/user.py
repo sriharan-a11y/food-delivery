@@ -14,7 +14,7 @@ class User(Base,BaseIDMixin,TimestampMixin):
     __tablename__="users"
 
     email=Column(String,unique=True , index=True,nullable=False)
-    hashed_password=Column(String,nullable=False)
+    hashed_password=Column(String,nullable=True)
     full_name=Column(String,nullable=False)
     phone_number=Column(String,unique=True,nullable=True,index=True)
     is_active=Column(Boolean,default=True)
