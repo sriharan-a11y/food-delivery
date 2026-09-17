@@ -2,7 +2,8 @@ from datetime import datetime, timedelta, timezone
 from jose import jwt
 from passlib.context import CryptContext
 from fastapi.security import OAuth2PasswordBearer
-SECRET_KEY = "my-secret-key"
+from core.config import settings
+SECRET_KEY = settings.SECRET_KEY
 ALGORITHM = "HS256"
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
 pwd_context = CryptContext(

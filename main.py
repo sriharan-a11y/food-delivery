@@ -1,4 +1,7 @@
 from contextlib import asynccontextmanager
+from notifications.routes import router as notification_router
+from kafka import start_kafka_consumer,close_kafka
+from orders.routes import router as order_router
 import secrets
 from models.user import User,UserRole
 from fastapi import (
@@ -27,7 +30,6 @@ from core.security import (
     verify_password,
     create_access_token
 )
-from config import settings
 from core.config import settings
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -35,15 +37,20 @@ async def lifespan(app: FastAPI):
         await conn.run_sync(
             Base.metadata.create_all
         )
+    await start_kafka_consumer()
+
     yield
+    await close_kafka()
     await engine.dispose()
 app = FastAPI(
     title="Food Delivery API",
     lifespan=lifespan
 )
+app.include_router(order_router,prefix="/orders",tags=["Orders"])
+app.include_router(notification_router)
 app.add_middleware(
     SessionMiddleware,
-    secret_key="settings.SECRET_KEY"
+    secret_key=settings.SECRET_KEY
 )
 oauth = OAuth()
 oauth.register(
